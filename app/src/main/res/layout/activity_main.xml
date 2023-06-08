@@ -1,95 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cl_container"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    android:fitsSystemWindows="true">
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
-    <com.github.florent37.diagonallayout.DiagonalLayout
-        android:id="@+id/diagonalLayout"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:diagonal_angle="10"
-        app:diagonal_direction="left"
-        app:diagonal_position="bottom">
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_navigation_menu"
+        app:labelVisibilityMode="selected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/design_header"
-            android:orientation="vertical"
-            android:scaleType="fitXY" />
-
-    </com.github.florent37.diagonallayout.DiagonalLayout>
-
-    <include layout="@layout/toolbar_main" />
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.gauravk.bubblenavigation.BubbleNavigationLinearView
-            android:id="@+id/navigationBar"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/background_rounded"
-            android:elevation="8dp"
-            android:padding="5dp"
-            tools:ignore="MissingClass">
-
-            <com.gauravk.bubblenavigation.BubbleToggleView
-                android:id="@+id/tabFilm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:bt_colorActive="#81c784"
-                app:bt_colorInactive="#78909c"
-                app:bt_icon="@drawable/ic_movie"
-                app:bt_shape="@drawable/tab_movie_color"
-                app:bt_title="Movie"
-                app:bt_titlePadding="5dp"
-                app:bt_titleSize="10sp" />
-
-            <com.gauravk.bubblenavigation.BubbleToggleView
-                android:id="@+id/tabTV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:bt_colorActive="#aa86f7"
-                app:bt_colorInactive="#78909c"
-                app:bt_icon="@drawable/ic_live_tv"
-                app:bt_shape="@drawable/tab_tv_color"
-                app:bt_title="Tv Show"
-                app:bt_titlePadding="5dp"
-                app:bt_titleSize="10sp" />
-
-            <com.gauravk.bubblenavigation.BubbleToggleView
-                android:id="@+id/tabFav"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:bt_colorActive="#f06292"
-                app:bt_colorInactive="#78909c"
-                app:bt_icon="@drawable/ic_favorite"
-                app:bt_shape="@drawable/tab_fav_color"
-                app:bt_title="Favorite"
-                app:bt_titlePadding="5dp"
-                app:bt_titleSize="10sp" />
-
-        </com.gauravk.bubblenavigation.BubbleNavigationLinearView>
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
