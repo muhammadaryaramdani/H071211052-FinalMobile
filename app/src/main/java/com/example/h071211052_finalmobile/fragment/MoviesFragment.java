@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.h071211052_finalmobile.MainActivity;
 import com.example.h071211052_finalmobile.R;
@@ -33,6 +34,7 @@ import retrofit2.Response;
 public class MoviesFragment extends Fragment {
 
     private MoviesAdapter moviesAdapter;
+    private ProgressBar progressBar; // Deklarasikan ProgressBar
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,10 +52,10 @@ public class MoviesFragment extends Fragment {
             activity.getSupportActionBar().setTitle(getString(R.string.movies));
         }
 
-        Call<ListMoviesResponse> call = ApiConfig.getApiService().
-                getMovies(MainActivity.language, 1);
+        Call<ListMoviesResponse> call = ApiConfig.getApiService().getMovies(MainActivity.language, 1);
         List<MoviesResponse> moviesResponses = new ArrayList<>();
 
+        progressBar = view.findViewById(R.id.progressbar); // Inisialisasi ProgressBar dari layout
 
         MaterialTextView mtvNoInternet = view.findViewById(R.id.mtv_no_internet);
         RecyclerView recyclerView = view.findViewById(R.id.rv_movies);
@@ -62,33 +64,41 @@ public class MoviesFragment extends Fragment {
 
         btnRetry.setOnClickListener(v -> getActivity().recreate());
 
+        showProgressBar(); // Tampilkan ProgressBar sebelum memuat data
+
         call.enqueue(new Callback<ListMoviesResponse>() {
             @Override
-            public void onResponse(@NonNull Call<ListMoviesResponse> call,
-                                   @NonNull Response<ListMoviesResponse> response) {
-
+            public void onResponse(@NonNull Call<ListMoviesResponse> call, @NonNull Response<ListMoviesResponse> response) {
+                hideProgressBar(); // Sembunyikan ProgressBar setelah memuat data
 
                 recyclerView.setVisibility(View.VISIBLE);
 
                 if (response.isSuccessful() && response.body() != null) {
-
                     ListMoviesResponse listMoviesResponse = response.body();
                     moviesResponses.addAll(listMoviesResponse.getMoviesData());
                 }
 
                 moviesAdapter = new MoviesAdapter(moviesResponses);
                 recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,
-                        LinearLayoutManager.VERTICAL));
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
                 recyclerView.setAdapter(moviesAdapter);
             }
 
             @Override
             public void onFailure(@NonNull Call<ListMoviesResponse> call, @NonNull Throwable t) {
+                hideProgressBar(); // Sembunyikan ProgressBar jika ada kegagalan
 
                 mtvNoInternet.setVisibility(View.VISIBLE);
                 btnRetry.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE); // Tampilkan ProgressBar
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE); // Sembunyikan ProgressBar
     }
 }

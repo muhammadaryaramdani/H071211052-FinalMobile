@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.h071211052_finalmobile.fragment.FavoritesFragment;
 import com.example.h071211052_finalmobile.fragment.MoviesFragment;
@@ -15,11 +18,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     public static final String language = "en-US";
+    private ProgressBar progressBar; // Deklarasikan ProgressBar
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        progressBar = findViewById(R.id.progressbar); // Inisialisasi ProgressBar dari layout
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottonnav);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -59,4 +65,5 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
+
 }

@@ -8,7 +8,7 @@ import com.example.h071211052_finalmobile.models.TvshowsResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MappingHelper {
+public class MappingItemHelper {
 
     public static List<MoviesResponse> mapCursorToMoviesList(Cursor cursor) {
 

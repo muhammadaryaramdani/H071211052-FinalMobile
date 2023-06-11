@@ -38,6 +38,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rv_movies" />
 
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        tools:layout_editor_absoluteX="155dp"
+        tools:layout_editor_absoluteY="247dp"
+        tools:ignore="MissingConstraints" />
+
     <Button
         android:id="@+id/btn_retry"
         style="@style/Widget.Material3.Button.TextButton"

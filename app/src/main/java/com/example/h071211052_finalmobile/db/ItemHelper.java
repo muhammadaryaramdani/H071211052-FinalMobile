@@ -6,14 +6,14 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class ContentHelper {
+public class ItemHelper {
 
     private static final String DATABASE_TABLE = DatabaseContract.TABLE_NAME;
     private static DatabaseHelper databaseHelper;
     private static SQLiteDatabase database;
-    private static volatile ContentHelper INSTANCE;
+    private static volatile ItemHelper INSTANCE;
 
-    private ContentHelper(Context context) {
+    private ItemHelper(Context context) {
         databaseHelper = new DatabaseHelper(context);
     }
 
@@ -25,7 +25,7 @@ public class ContentHelper {
         return DATABASE_TABLE;
     }
 
-    public static ContentHelper getInstance(Context context) {
+    public static ItemHelper getInstance(Context context) {
 
         if (INSTANCE == null) {
 
@@ -33,7 +33,7 @@ public class ContentHelper {
 
                 if (INSTANCE == null) {
 
-                    INSTANCE = new ContentHelper(context);
+                    INSTANCE = new ItemHelper(context);
                 }
             }
         }

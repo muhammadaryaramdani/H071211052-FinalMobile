@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.h071211052_finalmobile.MainActivity;
 import com.example.h071211052_finalmobile.R;
@@ -34,11 +35,11 @@ import retrofit2.Response;
 public class TvshowsFragment extends Fragment {
 
     TvshowsAdapter adapter;
+    private ProgressBar progressBar; // Deklarasikan ProgressBar
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tv_shows, container, false);
     }
 
@@ -48,14 +49,13 @@ public class TvshowsFragment extends Fragment {
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
-
             activity.getSupportActionBar().setTitle(getString(R.string.tv_shows));
         }
 
-        Call<ListTvshowsResponse> call = ApiConfig.getApiService().
-                getTvshows(MainActivity.language, 1);
+        Call<ListTvshowsResponse> call = ApiConfig.getApiService().getTvshows(MainActivity.language, 1);
         List<TvshowsResponse> tvshowsResponses = new ArrayList<>();
 
+        progressBar = view.findViewById(R.id.progressbar); // Inisialisasi ProgressBar dari layout
 
         MaterialTextView mtvNoInternet = view.findViewById(R.id.mtv_no_internet);
         RecyclerView recyclerView = view.findViewById(R.id.rv_tv_shows);
@@ -65,34 +65,41 @@ public class TvshowsFragment extends Fragment {
 
         btnRetry.setOnClickListener(v -> getActivity().recreate());
 
+        showProgressBar(); // Tampilkan ProgressBar sebelum memuat data
+
         call.enqueue(new Callback<ListTvshowsResponse>() {
             @Override
-            public void onResponse(@NonNull Call<ListTvshowsResponse> call,
-                                   @NonNull Response<ListTvshowsResponse> response) {
-
+            public void onResponse(@NonNull Call<ListTvshowsResponse> call, @NonNull Response<ListTvshowsResponse> response) {
+                hideProgressBar(); // Sembunyikan ProgressBar setelah memuat data
 
                 recyclerView.setVisibility(View.VISIBLE);
 
                 if (response.isSuccessful() && response.body() != null) {
-
                     ListTvshowsResponse listTvshowsResponse = response.body();
                     tvshowsResponses.addAll(listTvshowsResponse.getTvshowsData());
                 }
 
                 adapter = new TvshowsAdapter(tvshowsResponses);
                 recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,
-                        LinearLayoutManager.VERTICAL));
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
                 recyclerView.setAdapter(adapter);
             }
 
             @Override
             public void onFailure(@NonNull Call<ListTvshowsResponse> call, @NonNull Throwable t) {
+                hideProgressBar(); // Sembunyikan ProgressBar jika ada kegagalan
 
                 mtvNoInternet.setVisibility(View.VISIBLE);
                 btnRetry.setVisibility(View.VISIBLE);
             }
         });
+    }
 
+    private void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE); // Tampilkan ProgressBar
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE); // Sembunyikan ProgressBar
     }
 }
