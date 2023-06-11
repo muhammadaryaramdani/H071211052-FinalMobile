@@ -1,168 +1,141 @@
 package com.example.h071211052_finalmobile;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-import com.example.h071211052_finalmobile.models.MoviesResponse;
-import com.example.h071211052_finalmobile.models.TvshowsResponse;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.example.h071211052_finalmobile.db.DatabaseHelper;
+import com.example.h071211052_finalmobile.models.Favorite;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_TYPE = "extra_type";
-    public static final String TYPE_MOVIE = "movie";
-    public static final String TYPE_TV_SHOW = "tv_show";
+    private DatabaseHelper dbHelper;
+    private ImageView latar, back, favorit, poster;
+    private TextView judul, rating, sinopsis;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("");
-        }
+        latar = findViewById(R.id.latar_belakang);
+        back = findViewById(R.id.back);
+        favorit = findViewById(R.id.love);
+        poster = findViewById(R.id.poster);
+        judul = findViewById(R.id.judul);
+        rating = findViewById(R.id.rating);
+        sinopsis = findViewById(R.id.sinopsis);
+        dbHelper = new DatabaseHelper(this);
 
-        Date date;
-        String type = getIntent().getStringExtra(EXTRA_TYPE);
-        Handler handler = new Handler();
+        back.setOnClickListener(view -> {
+            onBackPressed();
+        });
 
-
-        MaterialTextView mtvTitle = findViewById(R.id.mtv_title);
-        MaterialTextView mtvDate = findViewById(R.id.mtv_date);
-        MaterialTextView mtvSynopsis = findViewById(R.id.mtv_synopsis);
-        MaterialTextView mtvRating = findViewById(R.id.mtv_vote_average);
-        ImageView ivBackdrop = findViewById(R.id.iv_backdrop);
-        ImageView ivPoster = findViewById(R.id.iv_poster);
-        ImageView ivContentType = findViewById(R.id.iv_content_type);
-        CheckBox checkBox = findViewById(R.id.cb);
-
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
-
-        if (TYPE_MOVIE.equals(type)) {
-
-            MoviesResponse moviesResponse = getIntent().getParcelableExtra(TYPE_MOVIE);
-            String posterUrl = "https://image.tmdb.org/t/p/w500" + moviesResponse.getPosterPath();
-            String backdropUrl = "https://image.tmdb.org/t/p/w500" + moviesResponse.getBackdropPath();
-            try {
-                date = inputFormat.parse(moviesResponse.getReleaseYear());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            String outputDateStr = outputFormat.format(date);
-
-            handler.postDelayed(() -> {
-
-
-                Glide.with(DetailsActivity.this)
-                        .load(posterUrl)
-                        .into(ivPoster);
-                Glide.with(DetailsActivity.this)
-                        .load(backdropUrl)
-                        .into(ivBackdrop);
-
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                }
-            }, 1900);
-
-
-            mtvTitle.setText(moviesResponse.getTitle());
-            mtvDate.setText(outputDateStr);
-            mtvSynopsis.setText(moviesResponse.getSynopsis());
-            mtvRating.setText(moviesResponse.getVoteAverage().toString());
+        Intent intent = getIntent();
+        if (intent.getParcelableExtra("movie") != null) {
+            Movie movie = intent.getParcelableExtra("movie");
+            String posterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.getPosterPath();
+            String backdropUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.getBackdropUrl();
+            judul.setText(movie.getTitle());
+            rating.setText(movie.getVoteAverage().toString());
             Glide.with(this)
-                    .load(moviesResponse.getContentType())
-                    .into(ivContentType);
+                    .load(posterUrl)
+                    .into(poster);
+            Glide.with(this)
+                    .load(backdropUrl)
+                    .into(latar);
+            sinopsis.setText(movie.getOverview());
 
-            checkBox.setOnClickListener(v -> {
+            if (dbHelper.isFavorites(movie.getTitle())) {
+                favorit.setImageResource(R.drawable.baseline_fav_border_19);
+            }
 
-                if (checkBox.isChecked()) {
-
-                    Snackbar.make(findViewById(android.R.id.content),
-                            moviesResponse.getTitle() + " " + getString(R.string.is_added),
-                            Snackbar.LENGTH_SHORT).show();
+            favorit.setOnClickListener(view ->  {
+                if (!dbHelper.isFavorites(movie.getTitle())) {
+                    favorit.setImageResource(R.drawable.baseline_fav_border_19);
+                    addToFavorites(movie.getId(), movie.getOverview(), posterUrl, movie.getReleaseDate(), movie.getTitle(), movie.getVoteAverage(), backdropUrl);
                 } else {
-
-                    Snackbar.make(findViewById(android.R.id.content),
-                            moviesResponse.getTitle() + " " + getString(R.string.is_removed),
-                            Snackbar.LENGTH_SHORT).show();
+                    favorit.setImageResource(R.drawable.baseline_fav);
+                    deleteFromFavorites(movie.getTitle());
                 }
             });
-
-        } else if (TYPE_TV_SHOW.equals(type)) {
-
-            TvshowsResponse tvshowsResponse = getIntent().getParcelableExtra(TYPE_TV_SHOW);
-            String posterUrl = "https://image.tmdb.org/t/p/w500" + tvshowsResponse.getPosterPath();
-            String backdropUrl = "https://image.tmdb.org/t/p/w500" + tvshowsResponse.getBackdropPath();
-            try {
-                date = inputFormat.parse(tvshowsResponse.getAirYear());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            String outputDateStr = outputFormat.format(date);
-
-            handler.postDelayed(() -> {
-
-
-                Glide.with(DetailsActivity.this)
-                        .load(posterUrl)
-                        .into(ivPoster);
-                Glide.with(DetailsActivity.this)
-                        .load(backdropUrl)
-                        .into(ivBackdrop);
-
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                }
-            }, 1900);
-
-
-            mtvTitle.setText(tvshowsResponse.getName());
-            mtvDate.setText(outputDateStr);
-            mtvSynopsis.setText(tvshowsResponse.getSynopsis());
-            mtvRating.setText(tvshowsResponse.getVoteAverage().toString());
-            ivContentType.setImageResource(tvshowsResponse.getContentType());
+        } else if (intent.getParcelableExtra("show") != null) {
+            Tv show = intent.getParcelableExtra("show");
+            String posterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + show.getPosterPath();
+            String backdropUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + show.getBackdropUrl();
+            judul.setText(show.getTitle());
+            rating.setText(show.getVoteAverage().toString());
             Glide.with(this)
-                    .load(tvshowsResponse.getContentType())
-                    .into(ivContentType);
+                    .load(posterUrl)
+                    .into(poster);
+            Glide.with(this)
+                    .load(backdropUrl)
+                    .into(latar);
+            sinopsis.setText(show.getOverview());
 
-            checkBox.setOnClickListener(v -> {
+            if (dbHelper.isFavorites(show.getTitle())) {
+                favorit.setImageResource(R.drawable.baseline_fav);
+            }
 
-                if (checkBox.isChecked()) {
-
-                    Snackbar.make(findViewById(android.R.id.content),
-                            tvshowsResponse.getName() + " " + getString(R.string.is_added),
-                            Snackbar.LENGTH_SHORT).show();
+            favorit.setOnClickListener(view -> {
+                if (!dbHelper.isFavorites(show.getTitle())) {
+                    favorit.setImageResource(R.drawable.baseline_fav);
+                    addToFavorites(show.getId(), show.getOverview(), posterUrl, show.getTitle(), show.getTitle(), show.getVoteAverage(), backdropUrl);
                 } else {
+                    favorit.setImageResource(R.drawable.baseline_fav);
+                    deleteFromFavorites(show.getTitle());
+                }
+            });
+        }
+        else {
+            Favorite favorite = intent.getParcelableExtra("favorite");
+            String posterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + favorite.getPosterPath();
+            String backdropUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + favorite.getBackdropUrl();
+            judul.setText(favorite.getTitle());
+            rating.setText(favorite.getVoteAverage().toString());
+            Glide.with(this)
+                    .load(posterUrl)
+                    .into(poster);
+            Glide.with(this)
+                    .load(backdropUrl)
+                    .into(latar);
+            sinopsis.setText(favorite.getOverview());
 
-                    Snackbar.make(findViewById(android.R.id.content),
-                            tvshowsResponse.getName() + " " + getString(R.string.is_removed),
-                            Snackbar.LENGTH_SHORT).show();
+            if (dbHelper.isFavorites(favorite.getTitle())) {
+                favorit.setImageResource(R.drawable.baseline_fav);
+            }
+
+            favorit.setOnClickListener(view -> {
+                if (!dbHelper.isFavorites(favorite.getTitle())) {
+                    favorit.setImageResource(R.drawable.baseline_fav);
+                    addToFavorites(favorite.getId(), favorite.getOverview(), posterUrl, favorite.getTitle(), favorite.getTitle(), favorite.getVoteAverage(), backdropUrl);
+                } else {
+                    favorit.setImageResource(R.drawable.baseline_fav_border_19);
+                    deleteFromFavorites(favorite.getTitle());
                 }
             });
         }
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-
-        finish();
-        return true;
+    private void addToFavorites(int id, String overview, String posterUrl, String releaseDate, String title, double voteAverage, String backdropUrl) {
+        Favorite favorite = new Favorite(id, overview, posterUrl, releaseDate, title, voteAverage, backdropUrl);
+        long result = dbHelper.insertFavorite(favorite);
+        if (result != -1) {
+            Toast.makeText(this, "Movie / Show added to favorites", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to add to favorite", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void deleteFromFavorites(String nama) {
+        long result = dbHelper.deleteFavorite(nama);
+        if (result != -1) {
+            Toast.makeText(this, "Movie / Show Deleted From favorites", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to delete movie", Toast.LENGTH_SHORT).show();
+        }
     }
 }
-
-

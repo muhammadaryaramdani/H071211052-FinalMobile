@@ -10,36 +10,42 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.h071211052_finalmobile.fragment.FavoritesFragment;
-import com.example.h071211052_finalmobile.fragment.MoviesFragment;
-import com.example.h071211052_finalmobile.fragment.TvshowsFragment;
+import com.example.h071211052_finalmobile.fragment.FavoriteFragment;
+import com.example.h071211052_finalmobile.fragment.MovieFragment;
+import com.example.h071211052_finalmobile.fragment.TvShowFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String language = "en-US";
     private ProgressBar progressBar; // Deklarasikan ProgressBar
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.progressbar); // Inisialisasi ProgressBar dari layout
+        Objects.requireNonNull(getSupportActionBar()).hide();
+
+
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottonnav);
         FragmentManager fragmentManager = getSupportFragmentManager();
-        MoviesFragment fragment1 = new MoviesFragment();
-        TvshowsFragment fragment2 = new TvshowsFragment();
-        FavoritesFragment fragment3 = new FavoritesFragment();
+        MovieFragment fragment1 = new MovieFragment();
+        TvShowFragment fragment2 = new TvShowFragment();
+        FavoriteFragment fragment3 = new FavoriteFragment();
 
         Fragment fragment =
-                fragmentManager.findFragmentByTag(MoviesFragment.class.getSimpleName());
-        if (!(fragment instanceof MoviesFragment)) {
+                fragmentManager.findFragmentByTag(MovieFragment.class.getSimpleName());
+        if (!(fragment instanceof MovieFragment)) {
             fragmentManager
                     .beginTransaction()
                     .add(R.id.cl_container, fragment1,
-                            MoviesFragment.class.getSimpleName())
+                            MovieFragment.class.getSimpleName())
                     .commit();
         }
 

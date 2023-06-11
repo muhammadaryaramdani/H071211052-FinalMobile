@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.TvshowsFragment">
+    tools:context=".fragment.TvShowFragment">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -34,14 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rv_tv_shows" />
 
-    <ProgressBar
-        android:id="@+id/progressbar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        tools:layout_editor_absoluteX="155dp"
-        tools:layout_editor_absoluteY="247dp"
-        tools:ignore="MissingConstraints" />
+
 
     <Button
         android:id="@+id/btn_retry"
